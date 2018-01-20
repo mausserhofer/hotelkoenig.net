@@ -1,0 +1,71 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+<title>Insert new Game</title>
+</head>
+
+<body>
+  
+<p>Um ein neues Spiel in das Hotelkönig-Universum einzufügen, bitte fülle das folgende Formular aus und klicke auf 'Spiel hinzufügen'</p>
+
+<script src="https://www.gstatic.com/firebasejs/4.8.1/firebase.js"></script>
+<script>
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyAPK054lSzv5mvbPlhJlbYqRa6Kxlm413Q",
+    authDomain: "helosystem-22b06.firebaseapp.com",
+    databaseURL: "https://helosystem-22b06.firebaseio.com",
+    projectId: "helosystem-22b06",
+    storageBucket: "helosystem-22b06.appspot.com",
+    messagingSenderId: "689393286323"
+  };
+  firebase.initializeApp(config);
+</script>
+
+<form>
+  First place: <input type="text" id="p1"><br>
+  Second place: <input type="text" id="p2"><br>
+  Third place: <input type="text" id="p3"><br>
+  Fourth place: <input type="text" id="p4"><br>
+  Fifth place: <input type="text" id="p5"><br>
+  Sixth place: <input type="text" id="p6"><br><br>
+  <input type="button" onclick="myFunction()" value="Spiel hinzufügen">
+</form>
+
+<script>
+function myFunction() {
+    console.log("getting places")
+    var place1 = document.getElementById("p1").value;
+    var place2 = document.getElementById("p2").value;
+    var place3 = document.getElementById("p3").value;
+    var place4 = document.getElementById("p4").value;
+    var place5 = document.getElementById("p5").value;
+    var place6 = document.getElementById("p6").value;
+    
+    console.log("getting reference to database")
+    var newGameRef = firebase.database().ref('Game').push();
+    console.log("set new dataset")
+    newGameRef.set({
+      result: {
+        1: place1,
+        2: place2,
+        3: place3,
+        4: place4,
+        5: place5,
+        6: place6
+      },
+      comment: "This game was inserted for testint purposes",
+      payoff: "standard",
+      review: 0,
+      gameTimestamp: "25-12-2017"
+    })
+}
+</script>
+
+
+
+
+
+</body>
+</html>
