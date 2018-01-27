@@ -1,4 +1,5 @@
 //create connection to firebasejs
+
 var config = {
   apiKey: "AIzaSyAPK054lSzv5mvbPlhJlbYqRa6Kxlm413Q",
   authDomain: "helosystem-22b06.firebaseapp.com",
