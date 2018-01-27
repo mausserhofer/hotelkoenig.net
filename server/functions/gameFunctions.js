@@ -17,7 +17,7 @@ console.log("Firebase connection created")
 function createGameInProgress(){
 		var gameRef = firebase.database().ref('gameInProgress').push()
 		gameRef.set({active: 1})
-};
+}
 
 
 

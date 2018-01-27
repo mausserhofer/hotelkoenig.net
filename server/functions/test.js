@@ -40,9 +40,9 @@ function ord_comb (x){
 	return vec
 }
 
-var res = ord_comb([1,2,3,4,5])
+var res = ord_comb([1,2,5])
 console.log("the possible combinations are:")
-//console.log(res)
+console.log(res)
 
 //console.log("try set diff")
 var x = [1,2,3]
