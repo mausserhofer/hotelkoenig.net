@@ -18,14 +18,12 @@ var playerRef = databaseRef.ref('Player');
 //let playerMax = 10
 var txt1 = "<TABLE align='center' width='200pt'> <TH> Name <TH> HELO"
 var txt2 = ""
-playerRef.orderByChild('heloNow').limitToLast(10).once('value')
+playerRef.orderByChild('heloNow').once('value')
   .then(function(snapshot) {
     // handle read data.
-    console.log("what else")
-    console.log(snapshot)
     snapshot.forEach(function(data) {
     player = data.val()
-    txt2="<TR> <TD>"+ player['nickname'] + "<TD>" + player['heloNow'] + "</TR>" + txt2
+    txt2="<TR> <TD>"+ player['nickname'] + "<TD>" + Math.round(player['heloNow']) + "</TR>" + txt2
     //console.log(txt)
   })
 txt3 = "</TABLE>"
