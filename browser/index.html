@@ -51,7 +51,7 @@
     <!-- Brand and toggle get grouped for better mobile display -->
     <div class="navbar-header">
       <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1"> <span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </button>
-      <a class="navbar-brand" href="hk_sm2017.html"><i class="fa fa-sun-o"></i> <strong>ANMELDUNG SÜDTIROLMEISTERSCHAFT</strong></a>
+      <a class="navbar-brand" href="index.html"><i class="fa fa-sun-o"></i> <strong>hotelkoenig.net</strong></a>
     </div>
 
     <div class="navbar-header" id="login-area">
@@ -182,10 +182,10 @@
     <div class="row">
         <div class="col-md-6">
         <form id="frm_newGame" display="none">
-          <table>
+          <table align='center'>
             <tr>
-              <td>  First place:  <td> <input type="text" id="p1" value="Margareth">
-              <td>  Second place: <td> <input type="text" id="p2" value="Gerus">
+              <td>  First place:  <td> <input type="text" id="p1" value="">
+              <td>  Second place: <td> <input type="text" id="p2" value="">
             </tr>
             <tr> <td>Third place: <td><input type="text" id="p3">
                 <td>Fourth place: <td><input type="text" id="p4">
@@ -201,14 +201,14 @@
             </select>
             <td>Payoff:<td><select name="selectPayoffType" id="selectPayoff">
               <option>Standard</option>
-              <option>Bullet</option>
-              <option>Benutzerdefiniert</option>
+                <option>unrated</option>
+                
             </select>
             </tr>
+            <tr> <td>Kommentar: <td> <input type="text" id="comment">            
+            <td> <input type="button" onclick="insertGame()" value="Spiel hinzufügen"> <td>
+            </tr>  
             </table>
-            Kommentar: <input type="text" id="comment">
-            <input type="button" onclick="insertGame()" value="Spiel hinzufügen">
-            
         </form>
         <div id="box_newGame"> <p>
           Bitte logge dich ein um ein neues Spiel zu registrieren.
@@ -270,7 +270,7 @@
           Wien, 1090</p>
       </div>
       <div class="col-md-4"> <i class="fa fa-envelope-o"></i>
-        <p>info@wasaboyz.com</p>
+        <p>lob@hotelkoenig.net</p>
       </div>
       <div class="col-md-4"> <i class="fa fa-phone"></i>
         <p> +43 666 6666 666</p>
@@ -322,7 +322,7 @@
 <div id="footer">
   <div class="container">
     <div class="fnav">
-      <p>Copyright &copy; Hotelkönig.net. Designed by <a href="http://www.templatewire.com" rel="nofollow">Mad Mike </a></p>
+      <p>Copyright &copy; 2018 Markus Ausserhofer, Hotelkönig.net. Designed by <a href="http://www.templatewire.com" rel="nofollow">Mad Mike </a></p>
     </div>
   </div>
 </div>

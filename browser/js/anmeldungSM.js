@@ -36,71 +36,71 @@ EventAttendantRef.orderByChild('event').equalTo(searchFor).once("value", functio
 });
 
 
-firebase.auth().onAuthStateChanged(function(user) {
-  if (user){
-    //show
-    console.log("user logged in: " + user.email)
-    document.getElementById("SM_loggedIn").style.display="inline"
-    document.getElementById("SM_notLoggedIn").style.display="none"
-    // if a user is logged in, check if she is registered for the event
-    var EventAttendantRef = databaseRef.ref('EventAttendant')
-    var event="SM2017"
-    var searchFor = event+"_"+user.uid
-    EventAttendantRef.orderByChild('event_UID').equalTo(searchFor).once("value",snapshot => {
-      const userData = snapshot.val();
-      console.log(userData)
-      if (userData==null){
-        document.getElementById('btn_notRegistered').style.display='inline'
-        document.getElementById('btn_registered').style.display='none'
-      } else{
-        document.getElementById('btn_notRegistered').style.display='none'
-        document.getElementById('btn_registered').style.display='inline'
-      }
-    })
-  } else{
-    document.getElementById("SM_loggedIn").style.display="none"
-    document.getElementById("SM_notLoggedIn").style.display="inline"
-  }
-});
+// firebase.auth().onAuthStateChanged(function(user) {
+//   if (user){
+//     //show
+//     console.log("user logged in: " + user.email)
+//     document.getElementById("SM_loggedIn").style.display="inline"
+//     document.getElementById("SM_notLoggedIn").style.display="none"
+//     // if a user is logged in, check if she is registered for the event
+//     var EventAttendantRef = databaseRef.ref('EventAttendant')
+//     var event="SM2017"
+//     var searchFor = event+"_"+user.uid
+//     EventAttendantRef.orderByChild('event_UID').equalTo(searchFor).once("value",snapshot => {
+//       const userData = snapshot.val();
+//       console.log(userData)
+//       if (userData==null){
+//         document.getElementById('btn_notRegistered').style.display='inline'
+//         document.getElementById('btn_registered').style.display='none'
+//       } else{
+//         document.getElementById('btn_notRegistered').style.display='none'
+//         document.getElementById('btn_registered').style.display='inline'
+//       }
+//     })
+//   } else{
+//     document.getElementById("SM_loggedIn").style.display="none"
+//     document.getElementById("SM_notLoggedIn").style.display="inline"
+//   }
+// });
 
-function anmeldungSM() {
-    var today = new Date();
-    var dd = today.getDate();
-    var mm = today.getMonth()+1; //January is 0!
-    var yyyy = today.getFullYear();
-    if(dd<10) { dd = '0'+dd}
-    if(mm<10) { mm = '0'+mm}
-    today = mm + '/' + dd + '/' + yyyy;
-    var event="SM2017"
-    console.log("getting reference to database")
-    var user = firebase.auth().currentUser
-    console.log(user.uid)
-    console.log(user.email)
-    console.log("set new dataset")
-    //check if user is already registered for "SM2017"
-    var EventAttendantRef = firebase.database().ref('EventAttendant')
-    var searchFor = event+"_"+user.uid
-    console.log(searchFor)
-    EventAttendantRef.orderByChild('event_UID').equalTo(searchFor).once("value",snapshot => {
-      const userData = snapshot.val();
-      if (userData==null){
-        var newEventAttendantRef = firebase.database().ref('EventAttendant').push();
-        newEventAttendantRef.set({
-          event: event,
-          uid: user.uid,
-          event_UID: event+"_"+user.uid,
-          email: user.email,
-          comment: "",
-          review: 0,
-          registrationTimestamp: today
-        })
-        alert("Teilnehmer*in hinzugefügt - bitte Seite aktualisieren")
-      } else {
-        alert("Error: User bereits für event angemeldet!")
-      }
-    });
+// function anmeldungSM() {
+//     var today = new Date();
+//     var dd = today.getDate();
+//     var mm = today.getMonth()+1; //January is 0!
+//     var yyyy = today.getFullYear();
+//     if(dd<10) { dd = '0'+dd}
+//     if(mm<10) { mm = '0'+mm}
+//     today = mm + '/' + dd + '/' + yyyy;
+//     var event="SM2017"
+//     console.log("getting reference to database")
+//     var user = firebase.auth().currentUser
+//     console.log(user.uid)
+//     console.log(user.email)
+//     console.log("set new dataset")
+//     //check if user is already registered for "SM2017"
+//     var EventAttendantRef = firebase.database().ref('EventAttendant')
+//     var searchFor = event+"_"+user.uid
+//     console.log(searchFor)
+//     EventAttendantRef.orderByChild('event_UID').equalTo(searchFor).once("value",snapshot => {
+//       const userData = snapshot.val();
+//       if (userData==null){
+//         var newEventAttendantRef = firebase.database().ref('EventAttendant').push();
+//         newEventAttendantRef.set({
+//           event: event,
+//           uid: user.uid,
+//           event_UID: event+"_"+user.uid,
+//           email: user.email,
+//           comment: "",
+//           review: 0,
+//           registrationTimestamp: today
+//         })
+//         alert("Teilnehmer*in hinzugefügt - bitte Seite aktualisieren")
+//       } else {
+//         alert("Error: User bereits für event angemeldet!")
+//       }
+//     });
 
-};
+// };
 
 function abmeldungSM(){
   console.log("start abmeldungSM")

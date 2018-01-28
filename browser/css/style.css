@@ -143,10 +143,10 @@ header p {
 	color: #fff;
 }
 .btn-default {
-	color: #fff;
+	color: #000;
 	font-family: 'Open Sans', sans-serif;
-	background-color: transparent;
-	border: 2px solid rgba(255,255,255,0.8);
+	background-color: #fff;
+	border: 2px solid rgba(100,100,100,0.8);
 	margin: 0 8px;
 	padding: 12px 24px;
 	font-size: 16px;
@@ -154,7 +154,7 @@ header p {
 	border-radius: 4px;
 }
 .btn-anmelden {
-	color: #888;
+	color: #fff;
 	font-family: 'Open Sans', sans-serif;
 	background-color: transparent;
 	border: 2px solid rgba(180,180,180,0.8);
@@ -165,7 +165,7 @@ header p {
 	border-radius: 4px;
 }
 .btn-nickname {
-	color: #888;
+	color: #fff;
 	font-family: 'Open Sans', sans-serif;
 	background-color: transparent;
 	border: 2px solid rgba(180,180,180,0.8);
@@ -178,7 +178,7 @@ header p {
 .btn-login {
 	color: #fff;
 	font-family: 'Open Sans', sans-serif;
-	background-color: transparent;
+	background-color: #666;
 	border: 2px solid rgba(255,255,255,0.8);
 	margin: 0 4px;
 	padding: 8px 16px;
@@ -515,4 +515,13 @@ label {
 .hover-bg .hover-text {
 	padding: 22% 10%;
 }
+}
+
+
+.tile-blue { color: #fff;
+		background-color: blue;
+}
+.tile-yellow{
+    color: #000;
+    background-color: yellow
 }

@@ -45,13 +45,22 @@ function insertGame() {
         console.log(partPlayer)
       }
     })  
-  
+
     //check if usernames were found
     var numPlayerFound = 0
     for (key in partPlayer){
       console.log(partPlayer[key].uid)
       numPlayerFound += 1
     }
+
+    // do some testing on partPlayer
+    console.log("Start investigating partPlayer")
+    console.log(partPlayer)
+    console.log(partPlayer['2'].uid)
+    console.log(partPlayer[1]['uid'])
+     // console.log(partPlayer.email)
+    console.log("End investigating player")
+
     if (numPlayerInput == numPlayerFound){
       console.log("all nicknames could be found - proceed")
       console.log("getting reference to database to save game")
@@ -87,6 +96,5 @@ function insertGame() {
       alert("not all players have been found - check nicknames for typos!")
     }
 
-    
   })
 }
