@@ -516,10 +516,24 @@ label {
 	padding: 22% 10%;
 }
 }
+/* Footer */
+
+.content-box{
+    color: #fff;
+    text-align: center;
+	position: relative;
+	background: #0dad8d;
+}
 
 
-.tile-blue { color: #fff;
-		background-color: blue;
+.tile-empty { 
+    color: #000;
+	background-color: antiquewhite;
+}
+
+.tile-blue { 
+    color: #fff;
+	background-color: blue;
 }
 .tile-yellow{
     color: #000;
