@@ -531,6 +531,42 @@ label {
 	background-color: antiquewhite;
 }
 
+.tile-played{
+    color: #000;
+    background-color:  darkgray;
+}
+
+.tile-luxor{
+    color: #fff;
+    background-color: red;
+}
+.tile-tower{
+    color: #000;
+    background-color: yellow;
+}
+.tile-hairport{
+    color: #fff;
+    background-color: midnightblue;
+}
+.tile-festival{
+    color: #000;
+    background-color: lawngreen;
+}
+.tile-wisconsin{
+    color: #fff;
+    background-color: saddlebrown;
+}
+.tile-continental{
+    color: #000;
+    background-color: azure;
+}
+.tile-himperial{
+    color: #000;
+    background-color: palevioletred;
+}
+
+
+
 .tile-blue { 
     color: #fff;
 	background-color: blue;

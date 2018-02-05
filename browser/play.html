@@ -11,8 +11,7 @@
 <link rel="stylesheet" type="text/css"  href="css/bootstrap.css">
 <link rel="stylesheet" type="text/css" href="fonts/font-awesome/css/font-awesome.css">
 
-<!-- Stylesheet
-    ================================================== -->
+<!-- Stylesheet -->
 <link rel="stylesheet" type="text/css"  href="css/style.css">
 <script type="text/javascript" src="js/modernizr.custom.js"></script>
 
@@ -21,8 +20,7 @@
 </head>
 
 <body>
-<!-- Navigation
-    ==========================================-->
+<!-- Navigation -->
 <nav id="menu" c>
   <div class="container">
     <!-- Brand and toggle get grouped for better mobile display -->
@@ -45,7 +43,7 @@
     </div>
 
   </div>
-  <!-- /.container-fluid -->
+  
 </nav>
 
 <div id="active-game-section">    
@@ -63,8 +61,13 @@
         <div align='center'> Board 
             <input type="button" class="btn-default" id="btn_returnLobby" value="Lobby">    
         </div>
+        <div class="container" id="display-shares">
+            Game has not started yet. Waiting for the creator to start the game.
+        </div>
         <div class="container">
             <table width='800' align='center'>
+                
+            <!-- /don't show fake row 
                 <tr>
                     <td id="1">1</td>
                     <td id="2">2</td> 
@@ -78,9 +81,10 @@
                     <td id="10">10</td>
                     <td id="11">11</td>
                     <td id="12">12</td>
-                </tr>   
-                <tr>
                     <td id="13">13</td>
+                </tr>   
+            -->
+                <tr>
                     <td id="14">14</td> 
                     <td id="15">15</td>
                     <td id="16">16</td>
@@ -92,10 +96,9 @@
                     <td id="22">22</td>
                     <td id="23">23</td>
                     <td id="24">24</td>
+                    <td id="25">25</td>
                 </tr>
                 <tr>
-                    <td id="25">25</td>
-                    <td id="26">26</td> 
                     <td id="27">27</td>
                     <td id="28">28</td>
                     <td id="29">29</td>
@@ -106,11 +109,10 @@
                     <td id="34">34</td>
                     <td id="35">35</td>
                     <td id="36">36</td>
-                </tr>
-                <tr>
                     <td id="37">37</td>
                     <td id="38">38</td> 
-                    <td id="39">39</td>
+                </tr>
+                <tr>
                     <td id="40">40</td>
                     <td id="41">41</td>
                     <td id="42">42</td>
@@ -120,12 +122,11 @@
                     <td id="46">46</td>
                     <td id="47">47</td>
                     <td id="48">48</td>
-                </tr>
-                <tr>
                     <td id="49" width='50'>49</td>
                     <td id="50" width='50'>50</td> 
                     <td id="51" width='50'>51</td>
-                    <td id="52" width='50'>52</td>
+                </tr>
+                <tr>
                     <td id="53" width='50'>53</td>
                     <td id="54" width='50'>54</td>
                     <td id="55" width='50'>55</td>
@@ -134,13 +135,12 @@
                     <td id="58" width='50'>58</td>
                     <td id="59" width='50'>59</td>
                     <td id="60" width='50'>60</td>
-                </tr>
-                   <tr>
                     <td id="61" width='50'>61</td>
                     <td id="62" width='50'>62</td> 
                     <td id="63" width='50'>63</td>
                     <td id="64" width='50'>64</td>
-                    <td id="65" width='50'>65</td>
+                </tr>
+                <tr>
                     <td id="66" width='50'>66</td>
                     <td id="67" width='50'>67</td>
                     <td id="68" width='50'>68</td>
@@ -148,48 +148,67 @@
                     <td id="70" width='50'>70</td>
                     <td id="71" width='50'>71</td>
                     <td id="72" width='50'>72</td>
-                </tr>
-                <tr>
                     <td id="73" width='50'>73</td>
                     <td id="74" width='50'>74</td> 
                     <td id="75" width='50'>75</td>
                     <td id="76" width='50'>76</td>
                     <td id="77" width='50'>77</td>
-                    <td id="78" width='50'>78</td>
+                </tr>
+                <tr>
                     <td id="79" width='50'>79</td>
                     <td id="80" width='50'>80</td>
                     <td id="81" width='50'>81</td>
                     <td id="82" width='50'>82</td>
                     <td id="83" width='50'>83</td>
                     <td id="84" width='50'>84</td>
-                </tr>
-                  <tr>
                     <td id="85" width='50'>85</td>
                     <td id="86" width='50'>86</td> 
                     <td id="87" width='50'>87</td>
                     <td id="88" width='50'>88</td>
                     <td id="89" width='50'>89</td>
                     <td id="90" width='50'>90</td>
-                    <td id="91" width='50'>91</td>
+                </tr>
+                <tr>
                     <td id="92" width='50'>92</td>
                     <td id="93" width='50'>93</td>
                     <td id="94" width='50'>94</td>
                     <td id="95" width='50'>95</td>
                     <td id="96" width='50'>96</td>
-                </tr>
-                <tr>
                     <td id="97" width='50'>97</td>
                     <td id="98" width='50'>98</td> 
                     <td id="99" width='50'>99</td>
                     <td id="100" width='50'>100</td>
                     <td id="101" width='50'>101</td>
                     <td id="102" width='50'>102</td>
-                    <td id="103" width='50'>103</td>
-                    <td id="104" width='50'>104</td>
+                    <td id="103" width='50'>103</td>    
+                </tr>
+                <tr>
                     <td id="105" width='50'>105</td>
                     <td id="106" width='50'>106</td>
                     <td id="107" width='50'>107</td>
                     <td id="108" width='50'>108</td>
+                    <td id="109" width='50'>109</td>
+                    <td id="110" width='50'>110</td>
+                    <td id="111" width='50'>111</td>
+                    <td id="112" width='50'>112</td>
+                    <td id="113" width='50'>113</td>
+                    <td id="114" width='50'>114</td>
+                    <td id="115" width='50'>115</td>
+                    <td id="116" width='50'>116</td>
+                </tr>
+                 <tr>
+                    <td id="118" width='50'>118</td>
+                    <td id="119" width='50'>119</td>
+                    <td id="120" width='50'>120</td>
+                    <td id="121" width='50'>121</td>
+                    <td id="122" width='50'>122</td>
+                    <td id="123" width='50'>123</td>
+                    <td id="124" width='50'>124</td>
+                    <td id="125" width='50'>125</td>
+                    <td id="126" width='50'>126</td>
+                    <td id="127" width='50'>127</td>
+                    <td id="128" width='50'>128</td>
+                    <td id="129" width='50'>129</td>
                 </tr>
             </table>
         </div>   
