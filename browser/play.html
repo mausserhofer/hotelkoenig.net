@@ -62,7 +62,58 @@
             <input type="button" class="btn-default" id="btn_returnLobby" value="Lobby">    
         </div>
         <div class="container" id="display-shares">
-            Game has not started yet. Waiting for the creator to start the game.
+            <table id="table-display-shares" width="800" border="1">
+                <tr>
+                    <td> Player </td>
+                    <td name="chain0-name"> Luxor  </td>
+                    <td name="chain1-name"> Tower  </td>
+                    <td name="chain2-name"> Festival  </td>
+                    <td name="chain3-name"> Wisconsin  </td>
+                    <td name="chain4-name"> Hairport  </td>
+                    <td name="chain5-name"> Continental  </td>
+                    <td name="chain6-name"> Himperial  </td>
+                    <td name="cash"> Cash</td>
+                    <td name="wealth"> Wealth</td>
+                </tr>
+                <tr>
+                    <td id="player1">Player1</td>
+                    <td id="shares-p1-chain0">0</td>
+                    <td id="shares-p1-chain1">0</td>
+                    <td id="shares-p1-chain2">0</td>
+                    <td id="shares-p1-chain3">0</td>
+                    <td id="shares-p1-chain4">0</td>
+                    <td id="shares-p1-chain5">0</td>
+                    <td id="shares-p1-chain6">0</td>
+                    <td id="cash-p1">6000</td>
+                    <td id="wealth-p1">6000</td>
+                </tr>
+                
+            </table>
+            <br>
+        </div>
+        <div class="container" id="buy-shares">
+            <table width="100px" align="center">
+                <tr>
+                    <td name="chain0-name" width="50"> Luxor  </td>
+                    <td name="chain1-name" width="50"> Tower  </td>
+                    <td name="chain2-name"> Festival  </td>
+                    <td name="chain3-name"> Wisconsin  </td>
+                    <td name="chain4-name"> Hairport  </td>
+                    <td name="chain5-name"> Continental  </td>
+                    <td name="chain6-name"> Himperial  </td>
+                    <td name="empty-cell">   </td>
+                </tr>
+                <tr>
+                    <td> <input id="chain0-shares" value="0" size="10" maxlength="10"> </td>    
+                    <td> <input id="chain1-shares" value="0" size="10" maxlength="10"> </td> 
+                    <td> <input id="chain2-shares" value="0" size="10" maxlength="10"> </td> 
+                    <td> <input id="chain3-shares" value="0" size="10" maxlength="10"> </td> 
+                    <td> <input id="chain4-shares" value="0" size="10" maxlength="10"> </td> 
+                    <td> <input id="chain5-shares" value="0" size="10" maxlength="10"> </td> 
+                    <td> <input id="chain6-shares" value="0" size="10" maxlength="10"> </td> 
+                    <td> <input type="button" class="btn-default" id="btn-buy-shares" value="Buy shares"> </td> 
+                </tr>
+            </table>
         </div>
         <div class="container">
             <table width='800' align='center'>
@@ -217,7 +268,7 @@
 <div id="footer">
   <div class="container">
     <div class="fnav">
-      <p>Copyright &copy; Hotelkönig.net. Designed by <a href="http://www.templatewire.com" rel="nofollow">Mad Mike </a></p>
+      <p>Copyright &copy; Hotelkönig.net. Designed by <a rel="nofollow">Mad Mike </a></p>
     </div>
   </div>
 </div>
