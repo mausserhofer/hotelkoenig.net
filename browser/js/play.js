@@ -52,19 +52,22 @@ document.getElementById("btn_startGame").addEventListener("click", startNewGame)
 document.getElementById("btn_returnLobby").addEventListener("click", showLobby)
 
 function launchGame(){
-    //handle Event Listener
-    tilesId.forEach(id => {
-        document.getElementById(id).addEventListener("click", playTile);
-    })
-    document.getElementById("display-shares").removeEventListener("click", launchGame)
-    // document.getElementById("display-shares").innerHTML="no shares purchased yet"
-    document.getElementById("btn-buy-shares").addEventListener("click", buyShares)
-
-    // 
-
     // start game with logged in players
     // give players an order (for shares table)
     databaseRef.ref("gameInProgress/"+Game.gameKey+"/started").set(true)
+    document.getElementById("display-shares").removeEventListener("click", launchGame)
+    addListener()
+}
+
+function addListener(){
+    console.log("adding listener")
+     //handle Event Listener
+     tilesId.forEach(id => {
+        document.getElementById(id).addEventListener("click", playTile);
+    })
+    
+    // document.getElementById("display-shares").innerHTML="no shares purchased yet"
+    document.getElementById("btn-buy-shares").addEventListener("click", buyShares)
 }
 
 function getPrice(chain, size){ // calculate price according to acquire rules
@@ -616,7 +619,7 @@ function checkTile(id){
 }
 function joinGame(){
     eraseTable()
-    console.log(this.id)
+    console.log("Game id: " + this.id)
     Game.gameKey = this.id
     databaseRef.ref("gameInProgress/"+this.id+"/moveNumber").once('value')
         .then(function(data){
@@ -634,7 +637,17 @@ function joinGame(){
     const updateTiles = databaseRef.ref("gameInProgress/"+this.id+"/moves").on('child_added', function(data){
         displayBoard(data)     
     })   
-    launchGame()
+
+    // as long as game has not started yet, add player uid to player
+    databaseRef.ref("gameInProgress/"+this.id+"/started").once('value').then(data =>{
+        started = data.val()
+        if (!started){
+            databaseRef.ref("gameInProgress/"+this.id+"/player").update(createEmptyPlayerObject())
+        }
+    })
+    
+
+    addListener()
 }
 function startNewGame(){  
     eraseTable()
@@ -649,7 +662,7 @@ function startNewGame(){
                         "tileChain": createEmptyTileChainObject(),
                         "user": createEmptyUserObject(),
                         "creator": firebase.auth().currentUser.uid,
-                        "player": {0: {"uid": firebase.auth().currentUser.uid, "shares": [0,0,0,0,0,0,0], "cash":0, "order": 0}},
+                        "player": createEmptyPlayerObject(),
                         "moveNumber": 0,
                         "tilePlayed": false,
                         "started": false,
@@ -666,6 +679,7 @@ function startNewGame(){
     showBoard()
     attachDisplayShareListener()
     console.log(updateTiles)
+    addListener()
 }
 function createEmptyTileChainObject(){
     const tileChainObject = {}

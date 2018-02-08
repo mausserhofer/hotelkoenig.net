@@ -1,0 +1,167 @@
+* {
+	margin: 0;
+	padding: 0;
+}
+
+.grid {
+	display: grid;
+	grid-template-columns:  5% 30% 60% 5%;
+	grid-template-rows: auto auto auto auto auto auto auto;
+	grid-template-areas:
+	". title title ."
+	". header header ."
+	". tables board ."
+	". tiles board ."
+	". actions board ."
+	". globalchat gamechat ."
+	". footer footer .";
+	grid-gap: 10px;
+ }
+
+.title {
+	grid-area: title;
+	background-color: black;
+	color: #99ebff;
+}
+
+.header {
+	grid-area: header;
+	background-color: white;
+}
+
+.tables {
+	grid-area: tables;
+	background-color: #99ebff;
+}
+
+.tiles {
+	grid-area: tiles;
+	background-color: white;
+	font-family: sans-serif;
+	font-size: 32px;
+	color: #22a3c3;
+	text-align: center;
+	vertical-align: middle;
+}
+
+.actions {
+	grid-area: actions;
+	background-color: #007a99;
+}
+
+.globalchat {
+	grid-area: globalchat;
+	background-color: #99ebff;
+}
+
+.gamechat {
+	grid-area: gamechat;
+	background-color: #007a99;
+}
+
+.board {
+	grid-area: board;
+	background-color: white;
+	font-family: sans-serif;
+	font-size: 32px;
+	color: #22a3c3;
+	text-align: center;
+	vertical-align: middle;
+}
+
+table.gametable {
+	background-color: #007a99;
+	padding-left: 1%;
+	padding-right: 1%;
+	padding-top: 1%;
+	padding-bottom: 1%;
+	border: 5px;
+	border-style: outset;
+	border-radius: 10px;
+	border-color: #4ddbff;
+}
+
+table.tilestable {
+	background-color: white;
+	padding-left: 1%;
+	padding-right: 1%;
+	padding-top: 1%;
+	padding-bottom: 1%;
+	border: 5px;
+	border-style: outset;
+	border-radius: 10px;
+	border-color: #4ddbff;
+}
+
+td {
+	width: 8%;
+	height: 11%;
+	border: 5px;
+	border-style: outset;
+	border-radius: 10px;
+	border-color: #4ddbff;
+	padding-top: 15px;
+	padding-bottom: 15px;
+	padding-left: 3px;
+	padding-right: 3px;
+	background-color: #007a99;
+}
+
+td.one {
+	width: 8%;
+	height: 11%;
+	border: 5px;
+	border-style: outset;
+	border-radius: 10px;
+	border-color: #4ddbff;
+	padding-top: 15px;
+	padding-bottom: 15px;
+	padding-left: 3px;
+	padding-right: 3px;
+	background-color: #007a99;
+}
+
+.footer {
+	grid-area: footer;
+	background-color: black;
+	color: #99ebff;
+}
+
+.tile-empty { 
+    color: #000;
+	background-color: antiquewhite;
+}
+
+.tile-played{
+    color: #000;
+    background-color:  darkgray;
+}
+
+.tile-luxor{
+    color: #fff;
+    background-color: red;
+}
+.tile-tower{
+    color: #000;
+    background-color: yellow;
+}
+.tile-hairport{
+    color: #fff;
+    background-color: midnightblue;
+}
+.tile-festival{
+    color: #000;
+    background-color: lawngreen;
+}
+.tile-wisconsin{
+    color: #fff;
+    background-color: saddlebrown;
+}
+.tile-continental{
+    color: #000;
+    background-color: azure;
+}
+.tile-himperial{
+    color: #000;
+    background-color: palevioletred;
+}

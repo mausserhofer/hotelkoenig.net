@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hotelkönig - Gablo</title>
+
+<!-- Stylesheet -->
+<link href="css/style_gabs.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="js/modernizr.custom.js"></script>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/4.8.1/firebase.js"></script>
+</head>
+
+<body>
+    <div class="grid">
+        <div class="title">Titel
+            <nav id="menu">
+                <div class="container">
+                    <!-- Brand and toggle get grouped for better mobile display -->
+                    <div class="navbar-header">
+                    <a href="index.html">
+                    <strong>Hotelkönig</strong>
+                    </a>
+                    </div>
+
+                    <div id="login-area">
+                    email: <input type="text" id="email" value="">
+                    password: <input type="password" id="password" value="">
+                    <input type="button" class="btn-login" id="btn_signIn" onClick=signIn() value="log in">
+                    <input type="button" class="btn-login" id="btn_register" onClick=register() value="register">
+                    </div>
+                    <div id="loggedIn-area">
+                <div id="box_signedIn" display="none"> </div>
+                <input type="button" class="btn-login" id="btn_signOut" onClick=signOut() value="log out" display="none">
+                <input type="button" class="btn-login" id="btn_clientZone" onclick="location.href='clientZone.html'" value="Client Zone" >
+                </div>
+                </div>
+            </nav>
+        </div>
+
+        <div class="header">Header
+            <div id="active-game-section">
+                <div class="content-box">
+                    The following is a list of current games.
+                    <div id="games-overview"></div>
+                </div>
+            </div>
+        </div>
+
+       
+        <div class="tiles" id ="player-tiles">Tiles
+            <table class="tilestable">
+                <tr>
+                    <td class="one" id="player-tile0">1A</td>
+                    <td class="one" id="player-tile1">3F</td>
+                    <td class="one" id="player-tile2">3H</td>
+                    <td class="one" id="player-tile3">6A</td>
+                    <td class="one" id="player-tile4">7B</td>
+                    <td class="one" id="player-tile5">9C</td>
+                </tr>
+            </table>
+        </div>
+        <div class="actions">
+            <div class="container" id="display-shares">
+                <table id="table-display-shares" width="200" border="1">
+                    <tr>
+                        <td> Player </td>
+                        <td name="chain0-name"> L </td>
+                        <td name="chain1-name"> T </td>
+                        <td name="chain2-name"> F </td>
+                        <td name="chain3-name"> W </td>
+                        <td name="chain4-name"> H </td>
+                        <td name="chain5-name"> C </td>
+                        <td name="chain6-name"> H </td>
+                        <td name="cash"> Cash</td>
+                        <td name="wealth"> Wealth</td>
+                    </tr>
+                    <tr>
+                        <td id="player1">Player1</td>
+                        <td id="shares-p1-chain0">0</td>
+                        <td id="shares-p1-chain1">0</td>
+                        <td id="shares-p1-chain2">0</td>
+                        <td id="shares-p1-chain3">0</td>
+                        <td id="shares-p1-chain4">0</td>
+                        <td id="shares-p1-chain5">0</td>
+                        <td id="shares-p1-chain6">0</td>
+                        <td id="cash-p1">6000</td>
+                        <td id="wealth-p1">6000</td>
+                    </tr>
+                </table>
+            <br>
+            </div>
+            <div class="container" id="buy-shares">
+                <table align="center">
+                    <tr>
+                        <td name="chain0-name"> L </td>
+                        <td name="chain1-name"> T </td>
+                        <td name="chain2-name"> F </td>
+                        <td name="chain3-name"> W </td>
+                        <td name="chain4-name"> H </td>
+                        <td name="chain5-name"> C </td>
+                        <td name="chain6-name"> H </td>
+                        <td name="empty-cell">   </td>
+                    </tr>
+                    <tr>
+                        <td> <input id="chain0-shares" value="0" size="2" maxlength="10"> </td>    
+                        <td> <input id="chain1-shares" value="0" size="2" maxlength="10"> </td> 
+                        <td> <input id="chain2-shares" value="0" size="2" maxlength="10"> </td> 
+                        <td> <input id="chain3-shares" value="0" size="2" maxlength="10"> </td> 
+                        <td> <input id="chain4-shares" value="0" size="2" maxlength="10"> </td> 
+                        <td> <input id="chain5-shares" value="0" size="2" maxlength="10"> </td> 
+                        <td> <input id="chain6-shares" value="0" size="2" maxlength="10"> </td> 
+                        <td> <input type="button" class="btn-default" id="btn-buy-shares" value="Buy shares"> </td> 
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div class="globalchat">Globalchat</div>
+        <div class="gamechat">Gamechat</div>
+        <div class="board">
+        <div id="play-section">
+        <div id="game-set-up" align="center">
+            <input type="button" align="center" class="btn-default" id="btn_startGame" value="start new Game">
+        </div>
+        <div id="game-in-progress" style="display: none" >
+            <div align='center'> Board
+                <input type="button" class="btn-default" id="btn_returnLobby" value="Lobby">
+            </div>
+            <table class="gametable">
+                <tr>
+                    <td id="14">1A</td>
+                    <td id="15">2A</td>
+                    <td id="16">3A</td>
+                    <td id="17">4A</td>
+                    <td id="18">5A</td>
+                    <td id="19">6A</td>
+                    <td id="20">7A</td>
+                    <td id="21">8A</td>
+                    <td id="22">9A</td>
+                    <td id="23">10A</td>
+                    <td id="24">11A</td>
+                    <td id="25">12A</td>
+                </tr>
+                <tr>
+                    <td id="27">1B</td>
+                    <td id="28">2B</td>
+                    <td id="29">3B</td>
+                    <td id="30">4B</td>
+                    <td id="31">5B</td>
+                    <td id="32">6B</td>
+                    <td id="33">7B</td>
+                    <td id="34">8B</td>
+                    <td id="35">9B</td>
+                    <td id="36">10B</td>
+                    <td id="37">11B</td>
+                    <td id="38">12B</td>
+                </tr>
+                <tr>
+                    <td id="40">1C</td>
+                    <td id="41">2C</td>
+                    <td id="42">3C</td>
+                    <td id="43">4C</td>
+                    <td id="44">5C</td>
+                    <td id="45">6C</td>
+                    <td id="46">7C</td>
+                    <td id="47">8C</td>
+                    <td id="48">9C</td>
+                    <td id="49">10C</td>
+                    <td id="50">11C</td>
+                    <td id="51">12C</td>
+                </tr>
+                <tr>
+                    <td id="53">1D</td>
+                    <td id="54">2D</td>
+                    <td id="55">3D</td>
+                    <td id="56">4D</td>
+                    <td id="57">5D</td>
+                    <td id="58">6D</td>
+                    <td id="59">7D</td>
+                    <td id="60">8D</td>
+                    <td id="61">9D</td>
+                    <td id="62">10D</td>
+                    <td id="63">11D</td>
+                    <td id="64">12D</td>
+                </tr>
+                <tr>
+                    <td id="66">1E</td>
+                    <td id="67">2E</td>
+                    <td id="68">3E</td>
+                    <td id="69">4E</td>
+                    <td id="70">5E</td>
+                    <td id="71">6E</td>
+                    <td id="72">7E</td>
+                    <td id="73">8E</td>
+                    <td id="74">9E</td>
+                    <td id="75">10E</td>
+                    <td id="76">11E</td>
+                    <td id="77">12E</td>
+                </tr>
+                <tr>
+                    <td id="79">1F</td>
+                    <td id="80">2F</td>
+                    <td id="81">3F</td>
+                    <td id="82">4F</td>
+                    <td id="83">5F</td>
+                    <td id="84">6F</td>
+                    <td id="85">7F</td>
+                    <td id="86">8F</td>
+                    <td id="87">9F</td>
+                    <td id="88">10F</td>
+                    <td id="89">11F</td>
+                    <td id="90">12F</td>
+                </tr>
+                <tr>
+                    <td id="92">1G</td>
+                    <td id="93">2G</td>
+                    <td id="94">3G</td>
+                    <td id="95">4G</td>
+                    <td id="96">5G</td>
+                    <td id="97">6G</td>
+                    <td id="98">7G</td>
+                    <td id="99">8G</td>
+                    <td id="100">9G</td>
+                    <td id="101">10G</td>
+                    <td id="102">11G</td>
+                    <td id="103">12G</td>
+                </tr>
+                <tr>
+                    <td id="105">1H</td>
+                    <td id="106">2H</td>
+                    <td id="107">3H</td>
+                    <td id="108">4H</td>
+                    <td id="109">5H</td>
+                    <td id="110">6H</td>
+                    <td id="111">7H</td>
+                    <td id="112">8H</td>
+                    <td id="113">9H</td>
+                    <td id="114">10H</td>
+                    <td id="115">11H</td>
+                    <td id="116">12H</td>
+                </tr>
+                <tr>
+                    <td id="118">1I</td>
+                    <td id="119">2I</td>
+                    <td id="120">3I</td>
+                    <td id="121">4I</td>
+                    <td id="122">5I</td>
+                    <td id="123">6I</td>
+                    <td id="124">7I</td>
+                    <td id="125">8I</td>
+                    <td id="126">9I</td>
+                    <td id="127">10I</td>
+                    <td id="128">11I</td>
+                    <td id="129">12I</td>
+                </tr>
+            </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">Footer</div>
+</div>
+
+	<script type="text/javascript" src="js/firebase.js"></script>
+	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+	<script type="text/javascript" src="js/jquery.1.11.1.js"></script>
+	<!-- Include all compiled plugins (below), or include individual files as needed -->
+	<script type="text/javascript" src="js/bootstrap.js"></script>
+	<script type="text/javascript" src="js/SmoothScroll.js"></script>
+	<script type="text/javascript" src="js/jquery.counterup.js"></script>
+	<script type="text/javascript" src="js/waypoints.js"></script>
+	<script type="text/javascript" src="js/jquery.prettyPhoto.js"></script>
+	<script type="text/javascript" src="js/jquery.isotope.js"></script>
+	<script type="text/javascript" src="js/jqBootstrapValidation.js"></script>
+	<script type="text/javascript" src="js/contact_me.js"></script>
+
+	<!-- Javascripts
+	    ================================================== -->
+	<script type="text/javascript" src="js/main.js"></script>
+	<script type="text/javascript" src="js/handle_auth.js"></script>
+	<script type="text/javascript" src="js/play.js"></script>
+
+</body>
+</html>
