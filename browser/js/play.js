@@ -9,66 +9,123 @@ const tilesId =[14, 15,	16,	17,	18,	19,	20,	21, 22, 23, 24, 25,
                 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116,
                 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129]
 
+// convert tilesID to tilesDescription (i.e. 45 to 3H)
+var dictionary = {}
+const alphabet = {0: "A", 1: "B", 2: "C", 3: "D", 4: "E", 5: "F", 6: "G", 7: "H", 8: "I"}
+for (tileId in tilesId){
+    dictionary[tilesId[tileId]] = (tilesId[tileId]%13) + alphabet[Math.floor((tilesId[tileId]-13) / 13)]
+}
+// console.log(dictionary)
+
 const newSharesId = ["chain0-shares", "chain1-shares", "chain2-shares","chain3-shares", "chain4-shares", "chain5-shares", "chain6-shares"]
 const cashStart = 6000
 const enumerate = [0,1,2,3,4,5,6]
 
 // reference to root database
 const databaseRef = firebase.database()
-// ideas for restricting access 
-// use the rules functionality, give every player out of the n players a number 0...n-1 and on every turn not 
-// increase move number by one but also move number (mod n) := moveNumberMod
-// players can only write go gameInProgress node if their assigned number equals the moveNumberMod
-
-// ideas shares
-// how to track shares and cash?
-// in users node track current states, i.e. shares and cash
-// in moves, track increments (changes and status)
-// where and when to calculate net worth? 
-//  - at end of each move
-//  - need chains node and users node
-//  - get the two nodes with database read and return net worth with changes
-
-// overall process
-// play tile
-//  determine changes of other tiles - write to move and tileChain and chains node
-//  (in case of merger) transform/sell shares according to player input
-// buy shares
-//  inrease player's shares
-//  determine each players net worth - write to player and move node
-
 
 // set css class names
 const stylePlayed = "tile-played"
 
 showLobby()
 
-// create game reference
+// create game object
 var Game = {}
 
 // add event listeners
-document.getElementById("display-shares").addEventListener("click", launchGame)
+document.getElementById("btn_launchGame").addEventListener("click", launchGame)
 document.getElementById("btn_startGame").addEventListener("click", startNewGame)
 document.getElementById("btn_returnLobby").addEventListener("click", showLobby)
+
+function randomInt(max) {
+    return Math.floor(Math.random() * Math.floor(max));
+  }
+
+function drawTiles(n, tilePlayer){
+
+    var drawnTiles = []
+    const lengthAvailableTiles = Object.keys(tilePlayer).length
+    
+    for (var i=0;i<n;i++){
+        const indexDrawnTile = randomInt(lengthAvailableTiles-i)
+        drawnTiles.push( tilePlayer.splice(indexDrawnTile,1)[0])
+    }   
+
+    databaseRef.ref("gameInProgress/"+Game.gameKey+"/tilePlayer").set(tilePlayer)
+    console.log("drawn tiles in funciton are "+drawnTiles)
+
+    return drawnTiles
+  }
 
 function launchGame(){
     // start game with logged in players
     // give players an order (for shares table)
-    databaseRef.ref("gameInProgress/"+Game.gameKey+"/started").set(true)
-    document.getElementById("display-shares").removeEventListener("click", launchGame)
-    addListener()
-}
+    databaseRef.ref("gameInProgress/"+Game.gameKey+"/tilePlayer").set(tilesId)
+    databaseRef.ref("gameInProgress/"+Game.gameKey+"/moves/status/moveNumber").set(1)
+
+    const playerProm = databaseRef.ref("gameInProgress/"+Game.gameKey+"/player").once('value').then(data=>{return data.val()})
+    Promise.all([playerProm]).then(answer =>{
+        var playerDB = answer[0]
+        
+        // create playerOrder node
+        var playerOrder = {}
+        const player = Object.keys(playerDB)
+        const numberPlayer = player.length
+        const randShift = randomInt(numberPlayer)
+        for (var i = 1; i<140;i++){
+            playerOrder[i]= player[(i-randShift) % numberPlayer]
+        }
+        databaseRef.ref("gameInProgress/"+Game.gameKey+"/moves/status/playerOrder").set(playerOrder)
+        
+        // assign tiles to player
+        const numberTiles = 6 * Object.keys(playerDB).length // six tiles for every player
+        databaseRef.ref("gameInProgress/"+Game.gameKey+"/tilePlayer").once("value", function(tp) {
+            var tilePlayer = tp.val()
+            var tiles = drawTiles(numberTiles, tilePlayer)
+            console.log("drawn tiles are " + tiles)
+            
+            for (playerId in playerDB){
+                playerDB[playerId]["tiles"] = tiles.splice(0,6) //take first six elements and remove them
+            }
+
+            for (var i = 1;i<=numberPlayer;i++){ //reverse operation to above - assigning playerIds a orderal number
+                playerDB[playerOrder[i]]["order"]=i
+            }
+
+            databaseRef.ref("gameInProgress/"+Game.gameKey+"/player").set(playerDB)
+            databaseRef.ref("gameInProgress/"+Game.gameKey+"/started").set(true)
+        })
+
+    })
+  }
 
 function addListener(){
     console.log("adding listener")
-     //handle Event Listener
-     tilesId.forEach(id => {
-        document.getElementById(id).addEventListener("click", playTile);
-    })
-    
+    //handle Event Listener
+    for (var i = 0; i<=5;i++){
+        document.getElementById("player-tile"+i).addEventListener("click", playTile)
+    }
+    // tilesId.forEach(id => {
+    //     document.getElementById(id).addEventListener("click", playTile);
+    // })  
     // document.getElementById("display-shares").innerHTML="no shares purchased yet"
     document.getElementById("btn-buy-shares").addEventListener("click", buyShares)
-}
+    document.getElementById("btn_launchGame").removeEventListener("click", launchGame)
+    document.getElementById("btn_launchGame").style.display="none"
+
+    // hide rows of table that are not needed
+    databaseRef.ref("gameInProgress/"+Game.gameKey+"/player").once('value', data =>{
+        const numberPlayer = Object.keys(data.val()).length
+        for (var i = 1;i<=6;i++){
+            if (i <= numberPlayer) document.getElementById("table-row-shares-p"+i).style.display=""
+            else document.getElementById("table-row-shares-p"+i).style.display="none"
+        }
+        Game.playerInit = data.val()
+    })
+
+    
+
+  }
 
 function getPrice(chain, size){ // calculate price according to acquire rules
     // console.log("chain: "+chain + " size: "+size)
@@ -104,7 +161,7 @@ function getPrice(chain, size){ // calculate price according to acquire rules
     const price =  (100*(addOn+basis))
     // console.log("price is "+price)
     return price
-}
+  }
 
 function getBonus(chain, size, result){
     // result is json object with name and shares of players
@@ -153,7 +210,37 @@ function getBonus(chain, size, result){
     result = {"bonus":bonus, "first": first, "second":second}
     return result
 
-}
+  }
+
+function computeWealth(playerDB, chainsDB){
+    var updatePlayer = {}
+    var bonus = {}
+    var wealth = 0
+    for (uid in playerDB){
+        wealth = playerDB[uid]["cash"]
+
+        for (var i = 0; i <= 6; i++){
+            wealth += playerDB[uid]["shares"][i]*chainsDB[i+1]["price"]
+        }
+        playerDB[uid]["wealth"] = wealth
+    }
+    // console.log("new player wealth from shares: "+wealth)
+    
+    for (chain in chainsDB){
+        if (chain > 20) continue
+        var position = {}
+        for (uid in playerDB){
+            position[uid]=playerDB[uid]["shares"][chain-1]
+        }   
+        bonus = getBonus(chain, chainsDB[chain]["size"], position)["bonus"]
+        // console.log("bonus")
+        // console.log(bonus)
+        for (uid in bonus){
+            playerDB[uid]["wealth"] = playerDB[uid]["wealth"]+bonus[uid]
+        }
+    }
+    return {"playerDB": playerDB}
+  }
 
 function setWealth(){
     const playerProm = databaseRef.ref("gameInProgress/"+Game.gameKey+"/player").once('value').then(data=>{return data.val()})
@@ -162,141 +249,135 @@ function setWealth(){
     const updatePlayer = Promise.all([playerProm, chainsProm]).then(promises =>{
         var playerDB = promises[0]
         var chainsDB = promises[1]
-        var updatePlayer = {}
-        var bonus = {}
-        var wealth = 0
-        for (uid in playerDB){
-            wealth = playerDB[uid]["cash"]
-
-            for (var i = 0; i <= 6; i++){
-                wealth += playerDB[uid]["shares"][i]*chainsDB[i+1]["price"]
-            }
-            playerDB[uid]["wealth"] = wealth
-        }
-        // console.log("new player wealth from shares: "+wealth)
-        
-        for (chain in chainsDB){
-            if (chain > 20) continue
-            var position = {}
-            for (uid in playerDB){
-                position[uid]=playerDB[uid]["shares"][chain-1]
-            }   
-            bonus = getBonus(chain, chainsDB[chain]["size"], position)["bonus"]
-            // console.log("bonus")
-            // console.log(bonus)
-            for (uid in bonus){
-                playerDB[uid]["wealth"] = playerDB[uid]["wealth"]+bonus[uid]
-            }
-        }
-
+        const newPlayerDB = computeWealth(playerDB, chainsDB)["playerDB"]
         databaseRef.ref("gameInProgress/"+Game.gameKey+"/player").set(playerDB)
     })
-}
+  }
 
 function hkRound(number){
     // console.log("number: "+number)
     return (100*Math.round(number/100,0))
-}
-
-function displayShares(data){
-    const playerData = data.val()
-        // console.log("playerData")
-        // console.log(playerData["cash"])
-        // console.log(playerData["shares"])
-        //insert changes to table
-        
-        const playerOrder = mapUid(data.ref.key)
-        for (var i=0; i<playerData["shares"].length; i++){
-            // console.log("chain: "+i+ " shares: "+ shares[key][i]
-            // console.log("playerOrder: " + playerOrder)
-            document.getElementById("shares-p"+mapUid(data.ref.key)+"-chain"+i).innerHTML=playerData["shares"][i]
-        }
-        
-        // (2) cash
-        document.getElementById("cash-p"+playerOrder).innerHTML=playerData["cash"]
-
-        // (3) wealth
-        document.getElementById("wealth-p"+playerOrder).innerHTML=playerData["wealth"]
-}
-
-function attachDisplayShareListener(){
-    console.log("sharesListener fired")
-    databaseRef.ref("gameInProgress/"+Game.gameKey+"/player").on('child_changed', data => {
-        // console.log("user is: " + data.ref.key)
-        displayShares(data)
-
-    })
-}
+  }
 
 function buyShares(){
     const userId = firebase.auth().currentUser.uid
     console.log("buying shares")
     const playerProm = databaseRef.ref("gameInProgress/"+Game.gameKey+"/player").once('value').then(data=>{return data.val()})
     const moveProm = databaseRef.ref("gameInProgress/"+Game.gameKey+"/moves").once('value').then(data=>{return data.val()})
-    const moveNumberProm  = databaseRef.ref("gameInProgress/"+Game.gameKey+"/moveNumber").once('value').then(data =>{return data.val() })
+    const moveNumberProm  = databaseRef.ref("gameInProgress/"+Game.gameKey+"/moves/status/moveNumber").once('value').then(data =>{return data.val() })
     const chainsProm  = databaseRef.ref("gameInProgress/"+Game.gameKey+"/chains").once('value').then(data =>{return data.val() })
-    return Promise.all([playerProm,moveProm, moveNumberProm, chainsProm]).then(promises =>{
+    const movesStatusProm  = databaseRef.ref("gameInProgress/"+Game.gameKey+"/moves"+"/status").once('value').then(data =>{return data.val() })
+    return Promise.all([playerProm, moveProm, moveNumberProm, chainsProm, movesStatusProm]).then(promises => {
         playerDB = promises[0]
         movesDB = promises[1]
         moveNumber = promises[2]
         chains = promises[3]
-        console.log("moveNumber is "+moveNumber)
-        var newShares = []
-        newSharesId.forEach(id => {
-            newShares.push(Number(document.getElementById(id).value))
-            document.getElementById(id).value=0
-        })
-        // console.log(newShares)
-        //to-do check that sum is below 3 and shares still available
-        var updateMove = {[userId]:{}}
-        var updatePlayer = {[userId]:{"shares": {}}}
-        enumerate.forEach(i =>{
-            if (newShares[i]!== 0) { //chain enumeratoin starts with 1, change eventually
-                updateMove[userId][i+1]= {   "chain": i+1,
-                                                "old": playerDB[userId]["shares"][i], 
-                                                "new": playerDB[userId]["shares"][i]+newShares[i], 
-                                                "bought":newShares[i]} 
-            }
-            updatePlayer[userId]["shares"][i] = playerDB[userId]["shares"][i]+newShares[i]
-            
-        })
-        
-        // substract cash
-        var spentCash = 0
-        for (key in chains){
-            if (key > 20) break;
-            // console.log(key)
-            spentCash += chains[key]["price"]*newShares[key-1]
-            // console.log(spentCash)
-        }
-        updatePlayer[userId]["cash"] = playerDB[userId]["cash"] - spentCash
-        updatePlayer[userId]["wealth"] = playerDB[userId]["wealth"]
-        console.log("spent cash. " + spentCash)
-        console.log(updatePlayer)
-        databaseRef.ref("gameInProgress/"+Game.gameKey+"/player/").update(updatePlayer)
-        databaseRef.ref("gameInProgress/"+Game.gameKey+"/moves/"+moveNumber+"/shares").update(updateMove)
-        
-        
-    })
-    setWealth()
-}
+        movesStatus = promises[4]
+        console.log(movesStatus)
+        console.log(chains)
+        myTurn(userId).then(action =>{
+            if (action == "buyShares") {
+                console.log("moveNumber is "+moveNumber)
+                var newShares = []
+                newSharesId.forEach(id => {
+                    newShares.push(Number(document.getElementById(id).value))
+                    document.getElementById(id).value=0
+                })
+                // console.log(newShares)
+                //to-do check that sum is below 3 and shares still available
+                var updateMove = {[userId]:{}}
+                var updateWealth = {}
+                var updateCash = {[userId]:{}}
+                var updatePlayer = {[userId]:{"shares": {}}}
+                updatePlayer[userId] = playerDB[userId]
+                enumerate.forEach(i =>{
+                    if (newShares[i]!== 0) { //chain enumeratoin starts with 1, change eventually
+                        updateMove[userId][i+1]= {  "chain": i+1,
+                                                    "old": playerDB[userId]["shares"][i], 
+                                                    "new": playerDB[userId]["shares"][i]+newShares[i], 
+                                                    "bought":newShares[i]} 
+                    }
+                    updatePlayer[userId]["shares"][i] = playerDB[userId]["shares"][i]+newShares[i]
+                })
+                
+                // substract cash
+                var spentCash = 0
+                for (key in chains){
+                    if (key > 20) break;
+                    // console.log(key)
+                    spentCash += chains[key]["price"]*newShares[key-1]
+                    // console.log(spentCash)
+                }
+                updatePlayer[userId]["cash"] = playerDB[userId]["cash"] - spentCash
+                
+                updateCash[userId] = {"buyShares": spentCash, "new": updatePlayer[userId]["cash"]}
+                console.log("spent cash. " + spentCash)
+                // console.log(updatePlayer)
+                // compute wealth
+                const newPlayerDB = computeWealth(playerDB, chains)["playerDB"]
+                for (player in newPlayerDB){
+                    updateWealth[player]= {"oldBuyShares": playerDB[player]["wealth"], "new": newPlayerDB[player]["wealth"]}
+                }
+                databaseRef.ref("gameInProgress/"+Game.gameKey+"/player/").update(updatePlayer)
+                databaseRef.ref("gameInProgress/"+Game.gameKey+"/moves/"+moveNumber+"/shares").update(updateMove)
+                databaseRef.ref("gameInProgress/"+Game.gameKey+"/moves/"+moveNumber+"/cash").update(updateCash)
+                databaseRef.ref("gameInProgress/"+Game.gameKey+"/moves/"+moveNumber+"/wealth").update(updateWealth)
+                databaseRef.ref("gameInProgress/"+Game.gameKey+"/moves/status/moveNumber").set(moveNumber+1)
+                databaseRef.ref("gameInProgress/"+Game.gameKey+"/moves/status/tilePlayed").set(false)
 
+                document.getElementById("display-turn").innerHTML= "next player to play a tile"
+
+                endGame(chains)
+             }
+            else if (actoin="playTile"){ //action not equals "buyShares"
+                alert ("no tile has been played yet - play a tile before purchasing shares")
+            } else{
+                alert ("not your turn")
+            }
+        })
+    })
+  }
+function endGame(chains){
+    var gameEndable = false
+    var allChainSafe = true
+    var noChainYet = true
+    for (chain in chains){
+        if (chains[chain]["size"]>0) noChainYet = false
+        if (chains[chain]["size"]> 40) gameEndable=true
+        if (chains[chain]["size"]<=10 || chains[chain]["size"] >0) allChainSafe = false
+    }
+
+    if (allChainSafe == true & noChainYet == false) gameEndable = true
+
+    if (gameEndable){
+        const endGame = prompt("Do you want to end the game? (Yes/No)", "Yes")
+        if (endGame){
+            databaseRef.ref("gameInProgress/"+Game.gameKey+"/finished").true
+            alert("Game has ended!")
+        }
+    }
+ }
 function playTile(){
-    const tileId = this.id
+    const tileId = this.name
+    const uid = firebase.auth().currentUser.uid
+    console.log("uid "+uid)
     const checkTilePromise  = checkTile(tileId)
-    const moveNumberProm    = databaseRef.ref("gameInProgress/"+Game.gameKey+"/moveNumber").once('value').then(data =>{return data.val() })
+    const moveNumberProm    = databaseRef.ref("gameInProgress/"+Game.gameKey+"/moves/status/moveNumber").once('value').then(data =>{return data.val() })
+    const tilePlayerProm    = databaseRef.ref("gameInProgress/"+Game.gameKey+"/tilePlayer").once('value').then(data =>{return data.val() })
     var newMove = {}
     var styleNameProm 
     var chainNameProm
     var chainSizeProm
     var playedTiles
     console.log("played Tile: "+tileId)
-    myTurn().then(action => {
+    myTurn(uid).then(action => {
         if (action==="playTile"){
-            Promise.all([checkTilePromise, moveNumberProm]).then(answer => {
+            Promise.all([checkTilePromise, moveNumberProm, tilePlayerProm]).then(answer => {
                 answerCheckTile = answer[0]
+                
                 type = answerCheckTile["type"]
-                const moveNumber = answer[1]+1
+                const moveNumber = answer[1]
+                tilePlayerDB = answer[2]
                 // console.log("type is " + type)
                 switch ( type ) {
                     case "empty":
@@ -308,14 +389,12 @@ function playTile(){
                                                         }
                                                     }
                         databaseRef.ref("gameInProgress/"+Game.gameKey+"/moves").update(newMove)
-                        databaseRef.ref("gameInProgress/"+Game.gameKey+"/moveNumber").set(moveNumber)
+                        databaseRef.ref("gameInProgress/"+Game.gameKey+"/moves/status/moveNumber").set(moveNumber)
                         databaseRef.ref("gameInProgress/"+Game.gameKey+"/tileChain/"+tileId).set("played")
                         // console.log(this.id)
                         break;
                     case "opener": //to-do give free share to founder
                         var chainOpen = prompt("Please enter the number of the chain you want to open (1-7): ", "1")
-                        // console.log(chainOpen + " selected")
-
                         // to do
                         // 1. get name of style class
                         // 2. prepare data for db write
@@ -323,12 +402,13 @@ function playTile(){
                         // (1)
                         styleNameProm = databaseRef.ref("gameInProgress/"+Game.gameKey+"/chains/"+chainOpen+"/style").once('value').then(data =>{return data.val() })
                         chainNameProm = databaseRef.ref("gameInProgress/"+Game.gameKey+"/chains/"+chainOpen+"/name").once('value').then(data =>{return data.val() })
-                        
+                        playerOpenShareProm = databaseRef.ref("gameInProgress/"+Game.gameKey+"/player/"+uid+"/shares/"+(chainOpen-1)).once('value').then(data =>{return data.val() })
                         // (2)
-                        Promise.all([styleNameProm, chainNameProm]).then(promises => {
+                        Promise.all([styleNameProm, chainNameProm, playerOpenShareProm]).then(promises => {
                             // console.log(promises)
                             const styleName = promises[0]
                             const chainName = promises[1]
+                            const sharesAfterOpener = promises[2]+1
                             playedTiles = answerCheckTile["playedTiles"] //contains tiles with old style in JSON
                             // console.log("playedTiles is")
                             // console.log(playedTiles)
@@ -345,14 +425,15 @@ function playTile(){
                             // console.log("Chain size is " + chainSize)
                             // console.log("update tiles is ")
                             // console.log(updateTiles)
-                            newMove[moveNumber] = {"playedId": tileId, "styleChanges": styleChanges}  
+                            const shares = {[uid]: {[chainOpen]: {"type": "bonus", "chain": chainOpen, "old": sharesAfterOpener-1, "openBonus": 1, "new": sharesAfterOpener}}}
+                            newMove[moveNumber] = {"playedId": tileId, "styleChanges": styleChanges, "shares": shares}  
                             // (3)
                             databaseRef.ref("gameInProgress/"+Game.gameKey+"/tileChain").update(updateTiles) 
                             databaseRef.ref("gameInProgress/"+Game.gameKey+"/moves").update(newMove)
                             databaseRef.ref("gameInProgress/"+Game.gameKey+"/chains/"+chainOpen+"/size").set(chainSize)  
                             databaseRef.ref("gameInProgress/"+Game.gameKey+"/chains/"+chainOpen+"/price").set(getPrice(chainOpen, chainSize))  
-                            databaseRef.ref("gameInProgress/"+Game.gameKey+"/moveNumber").set(moveNumber)
-                            setWealth() 
+                            databaseRef.ref("gameInProgress/"+Game.gameKey+"/player/"+uid+"/shares/"+(chainOpen-1)).set(sharesAfterOpener)
+                            databaseRef.ref("gameInProgress/"+Game.gameKey+"/moves/status/moveNumber").set(moveNumber)
                         })
                                            
                         break;
@@ -394,8 +475,7 @@ function playTile(){
                             databaseRef.ref("gameInProgress/"+Game.gameKey+"/moves").update(newMove)
                             databaseRef.ref("gameInProgress/"+Game.gameKey+"/chains/"+chainExtend+"/size").set(chainSize) 
                             databaseRef.ref("gameInProgress/"+Game.gameKey+"/chains/"+chainExtend+"/price").set(getPrice(chainExtend, chainSize))  
-                            databaseRef.ref("gameInProgress/"+Game.gameKey+"/moveNumber").set(moveNumber)
-                            setWealth()
+                            databaseRef.ref("gameInProgress/"+Game.gameKey+"/moves/status/moveNumber").set(moveNumber)
                         })
                         break;
                 
@@ -411,9 +491,11 @@ function playTile(){
 
                         chainProm = databaseRef.ref("gameInProgress/"+Game.gameKey+"/chains").once('value').then(data =>{return data.val() })
                         styleNameProm = databaseRef.ref("gameInProgress/"+Game.gameKey+"/chains/"+mergerSurvivor+"/style").once('value').then(data =>{return data.val() })
-                        Promise.all([chainProm, styleNameProm]).then(promises =>{
+                        playerProm = databaseRef.ref("gameInProgress/"+Game.gameKey+"/player").once('value').then(data =>{return data.val() })
+                        Promise.all([chainProm, styleNameProm, playerProm]).then(promises =>{
                             const chainsDB = promises[0]
                             const styleMergerSurvivor = promises[1]
+                            const playerDB = promises[2]
                             var newChainSize = 1+playedTiles.length+chainsDB[mergerSurvivor]["size"]
                             mergerDisappearer.forEach(chainID =>{
                                 newChainSize+= chainsDB[chainID]["size"]
@@ -423,7 +505,27 @@ function playTile(){
                             chainsDB[mergerSurvivor]["size"]=newChainSize
                             chainsDB[mergerSurvivor]["price"]=getPrice(mergerSurvivor, newChainSize)
                             console.log("mergersurivor: "+mergerSurvivor + " new chainSize: "+newChainSize)
-                        
+                            
+                            // payout bonus payments to majority shareholder
+                            // use getBonus-functions - need as input dictionary with shares
+                            cash = {}
+                            mergerDisappearer.forEach(chainID => {
+                                result={}
+                                for (player in playerDB){
+                                    result[player] = playerDB[player]["shares"][chainId-1]
+                                } 
+                                console.log("result")
+                                console.log(result)
+
+                                const bonus = getBonus(chainId, chainsDB[chainId]["size"], result)["bonus"]
+                                console.log("bonus")
+                                console.log(bonus)
+                                for (player in bonus){
+                                    playerDB[player]["cash"] =  playerDB[player]["cash"]+ bonus[player]
+                                    cash[player] = {"type": "merger", "new": playerDB[player]["cash"]}
+                                }
+                            })   
+
                             // chainUpdate[mergerSurvivor]["size"]={newChainSize}
                             var styleChanges = [{"id": tileId, "old": "empty", "new": styleMergerSurvivor}]
                             var updateTiles ={}
@@ -440,56 +542,76 @@ function playTile(){
                                 styleChanges.push({"id": id, "old": "played", "new": styleMergerSurvivor})
                             })
 
-                            newMove[moveNumber]={"playedId": tileId, "styleChanges": styleChanges}
-
-                            // console.log("chainsDB: ")
-                            // console.log(chainsDB)
-                            // console.log("styleChanges")
-                            // console.log(styleChanges)
+                            newMove[moveNumber]={"playedId": tileId, "styleChanges": styleChanges, "cash": cash}
                             // (3)
                             databaseRef.ref("gameInProgress/"+Game.gameKey+"/tileChain").update(updateTiles) 
                             databaseRef.ref("gameInProgress/"+Game.gameKey+"/moves").update(newMove)
                             databaseRef.ref("gameInProgress/"+Game.gameKey+"/chains/").set(chainsDB)  
-                            databaseRef.ref("gameInProgress/"+Game.gameKey+"/moveNumber").set(moveNumber)
-                            setWealth()
+                            databaseRef.ref("gameInProgress/"+Game.gameKey+"/moves/status/moveNumber").set(moveNumber)
+                            databaseRef.ref("gameInProgress/"+Game.gameKey+"/player").set(playerDB)
                         })
-                        
-                        
-                        
                         break;
                     case "impossible":
-                        alert("tile is impossible to play")
+                        alert("tile is impossible to play - choose another tile")
                         break;
 
                     default:
                         alert("something went wrong - contact admin")
                 }
+                // exchange tile
+                if (["empty", "opener", "extender", "merger"].indexOf(type)>-1){
+                    setWealth()
+                    databaseRef.ref("gameInProgress/"+Game.gameKey+"/moves/status/sharesBought").set(false)
+                    databaseRef.ref("gameInProgress/"+Game.gameKey+"/moves/status/tilePlayed").set(true)
+                    databaseRef.ref("gameInProgress/"+Game.gameKey+"/player/"+uid+"/tiles").once("value", data =>{
+                        var tilesDB = data.val()
+                        for (key in tilesDB){
+                            if (tilesDB[key]==tileId){
+                                tilesDB[key]= drawTiles(1, tilePlayerDB)[0]
+                            }
+                        }
+                        databaseRef.ref("gameInProgress/"+Game.gameKey+"/player/"+uid+"/tiles").set(tilesDB)
+                    })
+                    document.getElementById("display-turn").innerHTML=mapUid(uid) + " to buy shares"
+                }
             })
-        } else {
-            alert("not your turn"); return "not my turn"
+        } else if (action="buyShares"){
+            alert("You already played a tile - now purchase shares or just end your turn with clicking on the 'Buy Shares and end turn'-Button")
+        }else {
+            alert("it is an other player's turn"); return "not my turn"
         }
 
         //update chain prices
     })
-}
+  }
 
 function mapUid(uid){
+    console.log("Game.playerInit")
+    console.log(Game.playerInit)
     // to-do map every uid of n participating players to a number 1...n
-    return 1
-}
+    for (player in Game.playerInit){
+        if (player==uid)  {
+            console.log("player found in Game Init")
+            console.log("order is "+Game.playerInit[player]["order"])
+            return Game.playerInit[player]["order"]
+        }
+    }
+  }
 
-function myTurn(){
-    const moveNumberProm = databaseRef.ref("gameInProgress/"+Game.gameKey+"/moveNumber").once('value').then(data=>{return data.val()})
-    const tilePlayedProm = databaseRef.ref("gameInProgress/"+Game.gameKey+"/tilePlayed").once('value').then(data=>{return data.val()})
+function myTurn(uid){
+    const movesStatusProm = databaseRef.ref("gameInProgress/"+Game.gameKey+"/moves/status").once('value').then(data=>{return data.val()})
     
-    return Promise.all([moveNumberProm,tilePlayedProm]).then(promises =>{
-        moveNumber = promises[0]
-        tilePlayed = promises[1]
-        if (tilePlayed === false) return "playTile"
-        else return "buyShares"
-    })
-    
-}
+    return Promise.all([movesStatusProm]).then(promises =>{
+        const movesStatus = promises[0]
+        console.log(movesStatus)
+        if(movesStatus["playerOrder"][movesStatus["moveNumber"]]==uid){
+            if (movesStatus["tilePlayed"] === false) return "playTile"
+            else return "buyShares"
+        } else {
+            return "not your move"
+        }
+    })  
+  }
 function findNeighbors(id){
     const idNumber = Number(id)
     const neighborId = [idNumber-13,idNumber-1,idNumber+1,idNumber+13]
@@ -517,7 +639,7 @@ function findNeighbors(id){
         })
         return neighbors
     })
-}
+ }
 function checkTile(id){
     // console.log("checking tile for id "+id)
     return findNeighbors(id).then(neighbors => {
@@ -616,46 +738,58 @@ function checkTile(id){
             }
         }
     })
-}
-function joinGame(){
+ }
+
+function joinGameAsPlayer(){
+    joinGame(this.id)
+ }
+
+function joinGame(gameId){
     eraseTable()
-    console.log("Game id: " + this.id)
-    Game.gameKey = this.id
-    databaseRef.ref("gameInProgress/"+this.id+"/moveNumber").once('value')
+    console.log("Game id: " + gameId)
+    Game.gameKey = gameId
+    const uid = firebase.auth().currentUser.uid
+    databaseRef.ref("gameInProgress/"+gameId+"/moves/status/moveNumber").once('value')
         .then(function(data){
             const moveNumber = data.val()
             console.log("Game joined - currennt move number is " + moveNumber)
     })
 
-    databaseRef.ref("gameInProgress/"+this.id+"/player").once('value')
-        .then(function(data){
-            displayShares(data)
-        })
+    showBoard() //includes shares, cash and wealth
 
-    showBoard()
-    attachDisplayShareListener()
-    const updateTiles = databaseRef.ref("gameInProgress/"+this.id+"/moves").on('child_added', function(data){
-        displayBoard(data)     
-    })   
+    const updateTiles = databaseRef.ref("gameInProgress/"+gameId+"/moves")
+        .on('child_added', function(data){displayBoard(data)  })   
+
+    databaseRef.ref("gameInProgress/"+gameId+"/moves")
+        .on('child_changed', function(data){ displayBoard(data) })   
 
     // as long as game has not started yet, add player uid to player
-    databaseRef.ref("gameInProgress/"+this.id+"/started").once('value').then(data =>{
+    databaseRef.ref("gameInProgress/"+gameId+"/started").once('value').then(data =>{
         started = data.val()
         if (!started){
-            databaseRef.ref("gameInProgress/"+this.id+"/player").update(createEmptyPlayerObject())
+            databaseRef.ref("gameInProgress/"+gameId+"/player").update(createEmptyPlayerObject())
         }
     })
-    
-
-    addListener()
-}
-function startNewGame(){  
-    eraseTable()
-    
+    // TO-DO funktionsweise noch nicht getestet
+    databaseRef.ref("gameInProgress/"+gameId+"/started").on('value', data =>{
+            if (data.val()) {
+                addListener()
+                document.getElementById("player-tiles").style.display="block"
+                document.getElementById("display-turn").innerHTML="Game started!"
+                data.ref.off()
+                databaseRef.ref("gameInProgress/"+gameId+"/player/"+uid+"/tiles").on('value', tilesRaw =>{
+                    const tiles = tilesRaw.val()
+                    for (i in tiles){
+                        document.getElementById("player-tile"+i).innerHTML=dictionary[tiles[i]]
+                        document.getElementById("player-tile"+i).name=tiles[i]
+                    }
+                })
+            }
+    })
+ }
+function startNewGame(){      
     console.log("starting new game....")
     const gameRef = databaseRef.ref("gameInProgress").push()
-    Game.gameKey = gameRef.key //save reference to game in game object
-    console.log(Game.gameKey)
     Game.role = "creator"
 
     const gameInit = {  "chains": createEmptyChainObject(),
@@ -663,31 +797,22 @@ function startNewGame(){
                         "user": createEmptyUserObject(),
                         "creator": firebase.auth().currentUser.uid,
                         "player": createEmptyPlayerObject(),
-                        "moveNumber": 0,
+                        "moves": {"status": {"moveNumber": 0, "tilePlayed": false}},
                         "tilePlayed": false,
                         "started": false,
                         "finished": false,
                         "player": createEmptyPlayerObject()} 
     gameRef.set(gameInit)
 
-    // create event listener
-    const updateTiles = databaseRef.ref("gameInProgress/"+Game.gameKey+"/moves").on('child_added', function(data){
-        displayBoard(data)
-    })
-
-    Game.listener = updateTiles
-    showBoard()
-    attachDisplayShareListener()
-    console.log(updateTiles)
-    addListener()
-}
+    joinGame(gameRef.key)
+ }
 function createEmptyTileChainObject(){
     const tileChainObject = {}
     for (var i=1;(1+13*11)>i;i++){
        tileChainObject[i]="empty"
     }
     return tileChainObject;
-}
+ }
 function createEmptyChainObject(){
     const chainObject = {
                             1: {"name": "luxor",        "size":  0, "price": 0, "tiles": {}, "style": "tile-luxor"},
@@ -701,13 +826,13 @@ function createEmptyChainObject(){
     }
     
     return chainObject
-}
+ }
 function createEmptyPlayerObject(){
     var playerObject = {}
     playerObject[firebase.auth().currentUser.uid]={"shares": [0,0,0,0,0,0,0], "cash":cashStart, "wealth":cashStart}
     // console.log(playerObject)
     return playerObject
-}
+ }
 function createEmptyUserObject(){
     const userObject = {
         "metadata": {"numberPlayer":1, "maxPlayer": 4, "style": "standard"},
@@ -715,39 +840,73 @@ function createEmptyUserObject(){
     }
     return userObject
     // [firebase.auth().currentUser]
-}
+ }
 function eraseTable(){
     tilesId.forEach(function(id){
         document.getElementById(id).className= "tile-empty"
     })
     console.log("table erased")
-}
+ }
 function displayBoard(data){
+    // console.log("Function displayBoard")
+    // console.log(data.val())
     // console.log("listerner function fired")
     const styleChanges = data.val()["styleChanges"]
-    if (styleChanges){
+    if (styleChanges != null){
         styleChanges.forEach(changeTile =>{
             // console.log(styleChanges)
             const newStyle = changeTile["new"]
             const tileId = changeTile["id"]
             document.getElementById(tileId).className=newStyle
         })
-    }
-}
+     }
+    // to do process shares, cash and wealth here
+    const cash = data.val()["cash"]
+    if (cash != null){
+        for (player in cash){
+            // console.log(cash)
+            // console.log("playerId: "+player)
+            const playerOrder = mapUid(player)
+            document.getElementById("cash-p"+playerOrder).innerHTML=cash[player]["new"]
+        }
+     }
+
+    const wealth = data.val()["wealth"]
+   
+    if (wealth != null){
+        for (player in wealth){
+            const playerOrder = mapUid(player)
+            document.getElementById("wealth-p"+playerOrder).innerHTML=wealth[player]["new"]
+        }
+      }
+
+    const shares = data.val()["shares"]
+    if (shares != null){
+        for (player in shares){
+            for (chain in shares[player]){
+                const playerOrder = mapUid(player)
+                document.getElementById("shares-p"+playerOrder+"-chain"+chain).innerHTML=shares[player][chain]["new"]
+            }
+        }
+     }
+ }
+
 function showLobby(){
+    console.log("showing lobby")
     document.getElementById("game-in-progress").style.display="none"
     document.getElementById("game-set-up").style.display="block"
     document.getElementById("active-game-section").style.display="block"
     // show all games in progress
-    var txt1 = "<TABLE align='center' width='500'> <TH> Game ID <TH> Zugnummer <TH> beitreten "
+    var txt1 = "<TABLE align='center' width='500'> <TH> Game ID <TH> Zugnummer <TH> Number Player <TH> beitreten "
     var txt2=""
     const prom = databaseRef.ref("gameInProgress").on("value", function(data) { //detach prom when not needed anymore
         gameInProgress = data.val();
-        console.log(gameInProgress)
+        // console.log(gameInProgress)
         for (var game in gameInProgress) {
-            console.log(gameInProgress[game])
+            // console.log(gameInProgress[game])
             // const moves = ""+gameInProgress[game]['moves']["1"]["playedId"]
-            txt2 = txt2 + "<TR> <TD>" + game +  "<TD>" + gameInProgress[game]['moveNumber'] 
+            txt2 = txt2 + "<TR> <TD>" + game +  "<TD>" + gameInProgress[game]['moves']['status']['moveNumber'] 
+            + "<TD> "+Object.keys(gameInProgress[game]["player"]).length
             + "<TD id='" + game + "'>" + "Join game" + "</TR>"
         }
         txt3 = "</TABLE>"
@@ -755,14 +914,14 @@ function showLobby(){
         //console.log(txt)
         document.getElementById('games-overview').innerHTML=txt
         for (var game in gameInProgress) {
-            document.getElementById(game).addEventListener("click", joinGame);
+            document.getElementById(game).addEventListener("click", joinGameAsPlayer);
         }
     })
+ }
 
-}
 function showBoard(){
     document.getElementById("game-in-progress").style.display="block"
     document.getElementById("game-set-up").style.display="none"
     document.getElementById("active-game-section").style.display="none"
     databaseRef.ref("gameInProgress").off()
-}
+ }

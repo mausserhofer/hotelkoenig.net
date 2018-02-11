@@ -60,6 +60,8 @@
     <div id="game-in-progress" style="display: none">
         <div align='center'> Board 
             <input type="button" class="btn-default" id="btn_returnLobby" value="Lobby">    
+            <input type="button" class="btn-default" id="btn_launchGame" value="Launch Game">
+            <p id="display-turn">Game has not started yet</p>
         </div>
         <div class="container" id="display-shares">
             <table id="table-display-shares" width="800" border="1">
@@ -75,17 +77,77 @@
                     <td name="cash"> Cash</td>
                     <td name="wealth"> Wealth</td>
                 </tr>
-                <tr>
+                <tr id="table-row-shares-p1">
                     <td id="player1">Player1</td>
-                    <td id="shares-p1-chain0">0</td>
                     <td id="shares-p1-chain1">0</td>
                     <td id="shares-p1-chain2">0</td>
                     <td id="shares-p1-chain3">0</td>
                     <td id="shares-p1-chain4">0</td>
                     <td id="shares-p1-chain5">0</td>
                     <td id="shares-p1-chain6">0</td>
+                    <td id="shares-p1-chain7">0</td>
                     <td id="cash-p1">6000</td>
                     <td id="wealth-p1">6000</td>
+                </tr>
+                <tr id="table-row-shares-p2">
+                    <td id="player2">Player2</td>
+                    <td id="shares-p2-chain1">0</td>
+                    <td id="shares-p2-chain2">0</td>
+                    <td id="shares-p2-chain3">0</td>
+                    <td id="shares-p2-chain4">0</td>
+                    <td id="shares-p2-chain5">0</td>
+                    <td id="shares-p2-chain6">0</td>
+                    <td id="shares-p2-chain7">0</td>
+                    <td id="cash-p2">6000</td>
+                    <td id="wealth-p2">6000</td>
+                </tr>
+                 <tr id="table-row-shares-p3">
+                    <td id="player3">Player3</td>
+                    <td id="shares-p3-chain1">0</td>
+                    <td id="shares-p3-chain2">0</td>
+                    <td id="shares-p3-chain3">0</td>
+                    <td id="shares-p3-chain4">0</td>
+                    <td id="shares-p3-chain5">0</td>
+                    <td id="shares-p3-chain6">0</td>
+                    <td id="shares-p3-chain7">0</td>
+                    <td id="cash-p3">6000</td>
+                    <td id="wealth-p3">6000</td>
+                </tr>
+                <tr id="table-row-shares-p4">
+                    <td id="player4">Player4</td>
+                    <td id="shares-p4-chain1">0</td>
+                    <td id="shares-p4-chain2">0</td>
+                    <td id="shares-p4-chain3">0</td>
+                    <td id="shares-p4-chain4">0</td>
+                    <td id="shares-p4-chain5">0</td>
+                    <td id="shares-p4-chain6">0</td>
+                    <td id="shares-p4-chain7">0</td>
+                    <td id="cash-p4">6000</td>
+                    <td id="wealth-p4">6000</td>
+                </tr>
+                <tr id="table-row-shares-p5">
+                    <td id="player5">Player5</td>
+                    <td id="shares-p5-chain1">0</td>
+                    <td id="shares-p5-chain2">0</td>
+                    <td id="shares-p5-chain3">0</td>
+                    <td id="shares-p5-chain4">0</td>
+                    <td id="shares-p5-chain5">0</td>
+                    <td id="shares-p5-chain6">0</td>
+                    <td id="shares-p5-chain7">0</td>
+                    <td id="cash-p5">6000</td>
+                    <td id="wealth-p5">6000</td>
+                </tr>
+                <tr id="table-row-shares-p6">
+                    <td id="player6">Player6</td>
+                    <td id="shares-p6-chain1">0</td>
+                    <td id="shares-p6-chain2">0</td>
+                    <td id="shares-p6-chain3">0</td>
+                    <td id="shares-p6-chain4">0</td>
+                    <td id="shares-p6-chain5">0</td>
+                    <td id="shares-p6-chain6">0</td>
+                    <td id="shares-p6-chain7">0</td>
+                    <td id="cash-p6">6000</td>
+                    <td id="wealth-p6">6000</td>
                 </tr>
                 
             </table>
@@ -111,7 +173,7 @@
                     <td> <input id="chain4-shares" value="0" size="10" maxlength="10"> </td> 
                     <td> <input id="chain5-shares" value="0" size="10" maxlength="10"> </td> 
                     <td> <input id="chain6-shares" value="0" size="10" maxlength="10"> </td> 
-                    <td> <input type="button" class="btn-default" id="btn-buy-shares" value="Buy shares"> </td> 
+                    <td> <input type="button" class="btn-default" id="btn-buy-shares" value="Buy shares and end turn"> </td> 
                 </tr>
             </table>
         </div>
