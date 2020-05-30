@@ -4,11 +4,14 @@ console.log("this is a javascript test")
 function calc_prob (elo_h, elo_a){
 	const	bd = 400
 	const denom = 400
+	//this is a test comment
+	const uselessvar = 10
 	console.log("function cal_prob started")
 	var dif = Math.max(Math.min(elo_a-elo_h,bd),-bd)
 	console.log("diff: "+dif)
 	var expectation_h = 1/(1+10**(dif/denom))
 	
+	console.log (uselessvar)
 	return expectation_h
 	}
 
